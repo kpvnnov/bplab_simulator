@@ -1,10 +1,11 @@
-//$Id: algoritm.cpp,v 1.3 2004-03-23 17:55:50 peter Exp $
+//$Id: algoritm.cpp,v 1.4 2004-03-24 17:33:42 peter Exp $
 
 #include "..\msp\type_def.h"
 #include "algoritm.h"
 // Коэфициенты ОКОН
 
 extern  s16 signal[32767]; //сигнал
+u16     counter_of_samples;
 
 
 const s16 WIN_BL[]={417, 4233, 16655, 30465, 30465, 16655, 4233, 417};
@@ -24,6 +25,23 @@ s16 black_men8_12(s16* inp){
  for (int x=0;x<8;x++){
   t+=((long)(*inp++))*WIN_BL[x];
   }
+ return t/32768;
+}
+//требуемая ширина для обсчета 20 отсчетов
+// подсчет производится в "обратную" сторону
+s16 zykov_man8_12(s16* inp){
+ long t=0;
+ u8 x;
+
+ x=7;
+ do{
+  t+=((long)(*inp--))*WIN_BL[x];
+  } while(x--!=0);
+ inp-=4;
+ x=7;
+ do{
+  t+=((long)(*inp--))*WIN_BL_MINUS[x];
+  } while(x--!=0);
  return t/32768;
 }
 
@@ -48,8 +66,29 @@ s16 zykov_man_4_12_blackman(s16* inp){
 
  return t/32768;
 }
+//требуемая ширина для обсчета 24 отсчета
+// подсчет производится в "обратную" сторону
+s16 zykov_man4_12(s16* inp){
+ double long t=0;
+ s16* inp1=inp;
+ for (int x=0;x<8;x++){
+  t+=((long)(*inp++))*WIN_BL_075[x];
+  }
 
-u16 find_max(s16* inp, u16 interval){
+ inp=inp1+4;
+ for (int x=0;x<8;x++){
+  t+=((long)(*inp++))*WIN_BL_MINUS[x];
+  }
+
+ inp=inp1+16;
+ for (int x=0;x<8;x++){
+  t+=((long)(*inp++))*WIN_BL_025[x];
+  }
+
+ return t/32768;
+}
+
+u16 find_max_win(s16* inp, u16 interval){
  int x;
  s16 max=*inp++;
  u16 pos_max=0;
@@ -58,6 +97,20 @@ u16 find_max(s16* inp, u16 interval){
    pos_max=x;
    max=*inp;}
   inp++;
+  }
+return pos_max;
+}
+
+// поиск максимума влево
+u16 find_max(s16* inp, u16 interval){
+ int x;
+ s16 max=*inp--;
+ u16 pos_max=0;
+ for (x=1;x<interval;x++){
+  if (*inp>max){
+   pos_max=x;
+   max=*inp;}
+  inp--;
   }
 return pos_max;
 }
@@ -77,7 +130,7 @@ return pos_min;
 
 
 //вычисление амплитуды с учетом тренда
-s16 compute_amplitude(MAXIMUM* m,u16* pos){
+s16 compute_amplitude_win(MAXIMUM* m,u16* pos){
 s16 temp_m[200];
 
 double a0=(double)m[pos[0]].pulse_begin;
@@ -90,8 +143,38 @@ double delta=(double(a1-a0))/(pos1-pos0);
  for (int x=0;x<(pos1-pos0);x++){
   temp_m[x]=((double)signal[pos0+x])-delta*(double)x;
   }
- return temp_m[find_max(temp_m,pos1-pos0)]-temp_m[0];
+ return temp_m[find_max_win(temp_m,pos1-pos0)]-temp_m[0];
 }
+
+
+RES_TWO_PULSES compute_pulses(MAXIMUM* m,u16* pos){
+u16 time_0_1;
+s16 amp_diff2_0,amp_diff2_1;
+float diff_amp;
+
+ amp_diff2_0=m[pos[0]].amplitude_diff2;
+ if (amp_diff2_0<PRESS_MIN)     return AMP_BAD_LEFT_LOW; //амплитуда левого не попала в "грубый" диапазон
+ if (amp_diff2_0>PRESS_MAX)     return AMP_BAD_LEFT_HIGH; //амплитуда левого не попала в "грубый" диапазон
+
+ amp_diff2_1=m[pos[1]].amplitude_diff2;
+ if (amp_diff2_1<PRESS_MIN)     return AMP_BAD_RIGHT_LOW; //амплитуда правого не попала в "грубый" диапазон
+ if (amp_diff2_1>PRESS_MAX)     return AMP_BAD_RIGHT_HIGH; //амплитуда правого не попала в "грубый" диапазон
+
+ time_0_1=m[pos[1]].point_max_diff2-m[pos[0]].point_max_diff2;
+ if (time_0_1<TIME_MIN) return TIME_LOW; //не попал в грубые ворота по времени
+ if (time_0_1>TIME_MAX) return TIME_HIGH; //не попал в грубые ворота по времени
+
+ diff_amp=((float)amp_diff2_0)/((float)amp_diff2_1);
+ if (diff_amp<0.75)     return AMP_LEFT_LOW;    //левый импульс намного меньше
+ if (diff_amp>1.15)     return AMP_RIGHT_LOW;   //правый импульс намного меньше
+ return ALL_OK;
+}
+
+u16 get_signal(s16* sample){
+ *sample=signal[counter_of_samples++];
+ return 1;
+}
+
 
 /*
 
@@ -115,7 +198,7 @@ u16 i_p1=0,i_p2=0,i_p3=0;
 u16 i_t1=0,i_t2=0,i_t3=0,i_t4=0;
 u16 i_a1=0,i_a2=0,i_a3=0;
 
- time_0_1=m[pos[0]].point_min-m[pos[0]].point_min;
+ time_0_1=m[pos[1]].point_min-m[pos[0]].point_min;
  time_1_2=m[pos[2]].point_min-m[pos[1]].point_min;
  time_0_2=m[pos[2]].point_min-m[pos[0]].point_min;
 
