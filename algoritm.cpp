@@ -1,4 +1,4 @@
-
+//$Id: algoritm.cpp,v 1.2 2004-03-22 20:21:46 peter Exp $
 
 #include "..\msp\type_def.h"
 #include "algoritm.h"
