@@ -13,10 +13,25 @@ object Form1: TForm1
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Panel1: TPanel
+  object Splitter2: TSplitter
     Left = 0
     Top = 0
-    Width = 483
+    Width = 3
+    Height = 538
+    Cursor = crHSplit
+  end
+  object Splitter1: TSplitter
+    Left = 476
+    Top = 0
+    Width = 7
+    Height = 538
+    Cursor = crHSplit
+    Align = alRight
+  end
+  object Panel1: TPanel
+    Left = 3
+    Top = 0
+    Width = 473
     Height = 538
     Align = alClient
     Caption = 'Panel1'
@@ -24,22 +39,41 @@ object Form1: TForm1
     object Chart1: TChart
       Left = 1
       Top = 1
-      Width = 481
+      Width = 471
       Height = 536
       BackWall.Brush.Color = clWhite
       BackWall.Brush.Style = bsClear
+      MarginBottom = 0
+      MarginLeft = 0
+      MarginRight = 0
+      MarginTop = 0
       Title.Text.Strings = (
         'TChart')
+      Title.Visible = False
       OnScroll = Chart1Scroll
       OnZoom = Chart1Zoom
+      BottomAxis.ExactDateTime = False
+      BottomAxis.LabelStyle = talValue
+      BottomAxis.TickLength = 5
+      DepthAxis.LabelsFont.Charset = DEFAULT_CHARSET
+      DepthAxis.LabelsFont.Color = clBlack
+      DepthAxis.LabelsFont.Height = -12
+      DepthAxis.LabelsFont.Name = 'Arial'
+      DepthAxis.LabelsFont.Style = []
+      Legend.Alignment = laTop
+      Legend.ColorWidth = 100
+      Legend.ShadowSize = 1
+      Legend.TopPos = 0
       View3D = False
       Align = alClient
+      Color = clWhite
       TabOrder = 0
       object Series1: TLineSeries
         Marks.ArrowLength = 8
         Marks.Visible = False
         SeriesColor = clRed
         Title = 'SIGNAL'
+        LinePen.Style = psDash
         Pointer.InflateMargins = True
         Pointer.Style = psRectangle
         Pointer.Visible = False
@@ -57,6 +91,7 @@ object Form1: TForm1
         Marks.Visible = False
         SeriesColor = clGreen
         Title = 'DIFF'
+        LinePen.Style = psDot
         Pointer.InflateMargins = True
         Pointer.Style = psRectangle
         Pointer.Visible = False
@@ -74,9 +109,83 @@ object Form1: TForm1
         Marks.Visible = False
         SeriesColor = 16744448
         Title = 'DIFF2'
+        LinePen.Style = psDashDot
         Pointer.InflateMargins = True
         Pointer.Style = psRectangle
         Pointer.Visible = False
+        XValues.DateTime = False
+        XValues.Name = 'X'
+        XValues.Multiplier = 1
+        XValues.Order = loAscending
+        YValues.DateTime = False
+        YValues.Name = 'Y'
+        YValues.Multiplier = 1
+        YValues.Order = loNone
+      end
+      object Series4: TPointSeries
+        Marks.ArrowLength = 0
+        Marks.Visible = False
+        SeriesColor = clYellow
+        Pointer.Brush.Color = clLime
+        Pointer.InflateMargins = True
+        Pointer.Style = psTriangle
+        Pointer.Visible = True
+        XValues.DateTime = False
+        XValues.Name = 'X'
+        XValues.Multiplier = 1
+        XValues.Order = loAscending
+        YValues.DateTime = False
+        YValues.Name = 'Y'
+        YValues.Multiplier = 1
+        YValues.Order = loNone
+      end
+      object Series5: TPointSeries
+        Marks.ArrowLength = 0
+        Marks.Visible = False
+        SeriesColor = clBlue
+        Pointer.InflateMargins = True
+        Pointer.Style = psTriangle
+        Pointer.Visible = True
+        XValues.DateTime = False
+        XValues.Name = 'X'
+        XValues.Multiplier = 1
+        XValues.Order = loAscending
+        YValues.DateTime = False
+        YValues.Name = 'Y'
+        YValues.Multiplier = 1
+        YValues.Order = loNone
+      end
+      object Series7: TPointSeries
+        Marks.ArrowLength = 0
+        Marks.Visible = False
+        SeriesColor = clGray
+        Pointer.Brush.Color = clRed
+        Pointer.InflateMargins = True
+        Pointer.Style = psTriangle
+        Pointer.Visible = True
+        XValues.DateTime = False
+        XValues.Name = 'X'
+        XValues.Multiplier = 1
+        XValues.Order = loAscending
+        YValues.DateTime = False
+        YValues.Name = 'Y'
+        YValues.Multiplier = 1
+        YValues.Order = loNone
+      end
+      object Series8: TPointSeries
+        Marks.ArrowLength = 40
+        Marks.Font.Charset = DEFAULT_CHARSET
+        Marks.Font.Color = clBlack
+        Marks.Font.Height = -15
+        Marks.Font.Name = 'Arial'
+        Marks.Font.Style = [fsBold]
+        Marks.Transparent = True
+        Marks.Visible = True
+        SeriesColor = clFuchsia
+        Pointer.Brush.Color = clRed
+        Pointer.InflateMargins = True
+        Pointer.Style = psDownTriangle
+        Pointer.Visible = True
         XValues.DateTime = False
         XValues.Name = 'X'
         XValues.Multiplier = 1
